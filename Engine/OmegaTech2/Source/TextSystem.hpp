@@ -105,7 +105,7 @@ class TextSystem{
                             DrawTextEx(RussianBarFont, TextSubtext(TextFormat("%s" , SecondLine.c_str() ), 0 , FrameCounter / 3) , { 190 * ScaleValue, 720 / 2 - 100 + 80  + 35 } , 30  , 1, TextColor);
                         }
                     }
-                    if (LanguageType == 2 || LanguageType == 3){
+                    if (LanguageType == 2 || LanguageType == 3 || LanguageType == 4){ // Spanish , Port , French
                         DrawTextEx(LatinBarFont, TextSubtext(TextFormat("%s" , CurrentLine.c_str() ), 0 , FrameCounter / 3 ) , { 190* ScaleValue, 720 / 2 - 100 + 80  } , 30 , 1, TextColor);
 
                         if (SEnable){

@@ -757,7 +757,7 @@ void PlayHomeScreen()
 
         if (LDropdownBoxEditMode) GuiLock();
 
-        if (GuiDropdownBox((Rectangle){ 5,5 , 120, 24 }, "English;Russian;Spanish;Port.", &LDropdownBoxActive, LDropdownBoxEditMode)){
+        if (GuiDropdownBox((Rectangle){ 5,5 , 120, 24 }, "English;Russian;Spanish;Port.;French", &LDropdownBoxActive, LDropdownBoxEditMode)){
             LDropdownBoxEditMode = !LDropdownBoxEditMode;
         } 
         
@@ -779,6 +779,9 @@ void PlayHomeScreen()
             }
             if (LDropdownBoxActive == PortugesePack){
                 LoadLanguagePack(PortugesePack, &GlobalPackData);
+            }
+            if (LDropdownBoxActive == FrenchPack){
+                LoadLanguagePack(FrenchPack, &GlobalPackData);
             }
 
             OmegaTechTextSystem.LanguageType = GlobalPackData.Type;
@@ -1489,6 +1492,14 @@ void UpdatePlayer()
             PlaySound(OmegaTechSoundData.WalkingSound);
         }
     }
+
+
+    if (IsKeyDown(KEY_W) || IsKeyDown(KEY_A) || IsKeyDown(KEY_S) || IsKeyDown(KEY_D)){
+        if (!IsSoundPlaying(OmegaTechSoundData.WalkingSound))
+        {
+            PlaySound(OmegaTechSoundData.WalkingSound);
+        }
+    }
     else
     {
         if (IsSoundPlaying(OmegaTechSoundData.WalkingSound))
@@ -1496,6 +1507,7 @@ void UpdatePlayer()
             StopSound(OmegaTechSoundData.WalkingSound);
         }
     }
+
 
     OmegaPlayer.PlayerBounds = (BoundingBox){(Vector3){OmegaTechData.MainCamera.position.x - OmegaPlayer.Width / 2,
                                                        OmegaTechData.MainCamera.position.y - OmegaPlayer.Height,

@@ -99,6 +99,18 @@ void LoadLanguagePack(int Type, Pack* PackData){
             }
 
             break;
+        case 4: // Franch 
+            Lines = LineCount("GameData/Global/LanguagePacks/French.lg");
+            PackData->Size = Lines;
+            PackData->Type = 3;
+
+            if (Lines <= MaxPackSize){
+                for (int i = 0 ; i <= Lines; i++){
+                    PackData->Lines[i] = LoadLine("GameData/Global/LanguagePacks/French.lg" , i);
+                }
+            }
+
+            break;
     }
 }
 

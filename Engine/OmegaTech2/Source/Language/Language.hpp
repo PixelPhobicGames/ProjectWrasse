@@ -15,6 +15,7 @@ using namespace std;
 static int EnglishPack = 0;
 static int SpanishPack = 2;
 static int PortugesePack = 3;
+static int FrenchPack = 4;
 static int RussianPack = 1;
 
 
