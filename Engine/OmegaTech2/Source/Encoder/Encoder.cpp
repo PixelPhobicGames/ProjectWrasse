@@ -207,3 +207,20 @@ wstring Encode(wstring Data, wstring Key){
     }
     return Out;
 }
+
+string NEncode(const std::string& Data, const std::string& Key) {
+    string Out = "";
+    for (size_t i = 0; i < Data.size(); i++) {
+        char c = Data[i];
+        if (c >= 'A' && c <= 'Z') {
+            Out += Key[c - 'A'];
+        } else if (c >= 'a' && c <= 'z') {
+            Out += Key[c - 'a' + 26];
+        } else if (c >= '0' && c <= '9') {
+            Out += Key[c - '0' + 52];
+        } else {
+            Out += c;
+        }
+    }
+    return Out;
+}

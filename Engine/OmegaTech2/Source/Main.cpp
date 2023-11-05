@@ -99,7 +99,11 @@ int main(){
             }
         }
 
+        SceneIDMirror = OmegaTechData.LevelIndex;
+
     }
     
     CloseWindow();
+
+    //WritePMemPage();
 }

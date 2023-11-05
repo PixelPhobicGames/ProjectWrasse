@@ -111,6 +111,8 @@ auto LoadWorld()
     PlayFade();
     ClearLights();
 
+    SceneIDMirror = OmegaTechData.LevelIndex;
+
 
     if (OmegaTechData.Deaths != 3)
     {
@@ -163,10 +165,14 @@ auto LoadWorld()
         {
             ParasiteScriptInit();
             LoadScript(TextFormat("GameData/Worlds/World%i/Scripts/Launch.ps", OmegaTechData.LevelIndex));
-            for (int x = 0; x <= ParasiteScriptCoreData.ProgramSize; x++)
-            {
+
+            ParasiteRunning = true;
+
+            while (ParasiteRunning){
                 CycleInstruction();
                 ParasiteScriptCoreData.LineCounter++;
+
+                if (ParasiteScriptCoreData.LineCounter == ParasiteScriptCoreData.ProgramSize)ParasiteRunning = false;
             }
         }
 
@@ -719,6 +725,7 @@ void OmegaTechInit()
     OmegaTechData.GameLights[0] = CreateLight(LIGHT_DIRECTIONAL, OmegaTechData.MainCamera.target, Vector3Zero(), LightColor, OmegaTechData.Lights);
 
     Target = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+    ParasiteTarget = LoadRenderTexture(320 , 240);
 
     InitObjects();
 
@@ -2002,6 +2009,8 @@ void SaveGame()
     wofstream Outfile2;
     Outfile2.open("GameData/Saves/Script.sav");
     Outfile2 << ExtraWDLInstructions;
+
+    WritePMemPage();
 }
 
 void LoadSave()
@@ -2038,6 +2047,8 @@ void LoadSave()
     SetCameraPos = {float(X), float(Y), float(Z)};
 
     ExtraWDLInstructions = LoadFile("GameData/Saves/Script.sav");
+
+    RestorePMemPage();
 }
 
 void DrawWorld()

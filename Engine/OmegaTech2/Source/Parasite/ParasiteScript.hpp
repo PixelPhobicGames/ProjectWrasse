@@ -1,9 +1,15 @@
 #include "ParasiteScriptData.hpp"
+#include "../Encoder/Encoder.hpp"
 
 #define RedText "\033[4;31m"
 #define GreenText "\033[1;32m"
 #define BlueText "\033[1;34m"
 #define FadeColorText "\033[1;37m"
+
+
+
+string PMemKey = "9876543210zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA";
+
 
 
 auto ParasiteScriptLoadFile(const char* Path){
@@ -42,8 +48,17 @@ void ParasiteScriptInit(){
     ParasiteScriptCoreData.TextSize = 20;
 
 
+    VaribleCounter = 0;
+    TextureCounter = 0;
+    PMemCounter = 0;
+    JumpPointCounter = 0;
+    ArrayCounter = 0;
+
     for (int i = 0 ; i <= MaxVaribles - 1; i++){
         VaribleMemory[i].IValue = 0;
+    }
+    for (int i = 0 ; i <= MaxPermanentVaribles - 1; i++){
+        PermanentMemory[i].IValue = 0;
     }
 }
 
@@ -87,58 +102,23 @@ auto SplitValue(string Data , int Place ){
 }
 
 
-auto StringToInt(string Data){
+int StringToInt(const std::string& Data) {
     int Out = 0;
     int Place = 1;
-    for (int i = Data.size() ; i >= 0; i--){
-        
-        switch (Data[i]){
-            case '1':
-                Out += 1 * Place;
-                Place = Place * 10;
-                break;
-            case '2':
-                Out += 2 * Place;
-                Place = Place * 10;
-                break;
-            case '3':
-                Out += 3 * Place;
-                Place = Place * 10;
-                break;
-            case '4':
-                Out += 4 * Place;
-                Place = Place * 10;
-                break;
-            case '5':
-                Out += 5 * Place;
-                Place = Place * 10;
-                break;
-            case '6':
-                Out += 6 * Place;
-                Place = Place * 10;
-                break;
-            case '7':
-                Out += 7 * Place;
-                Place = Place * 10;
-                break;
-            case '8':
-                Out += 8 * Place;
-                Place = Place * 10;
-                break;
-            case '9':
-                Out += 9 * Place;
-                Place = Place * 10;
-                break;
-            case '0':
-                Place = Place * 10;
-                break;
-            case '-':
-                Out = Out * -1;
-                break;
+    int i = Data.size() - 1;  // Start from the end of the string
+
+    while (i >= 0) {
+        char c = Data[i];
+        if (c == '-') {
+            Out = -Out;  // Handle negative sign
+        } else if (c >= '0' && c <= '9') {
+            int digit = c - '0';
+            Out += digit * Place;
+            Place *= 10;
         }
-        
+        i--;
     }
-    
+
     return Out;
 }
 
@@ -162,6 +142,11 @@ auto ScanVaribleMemory(string VaribleName){
             Found = true;
         }
     }
+    for (int x = 0 ; x <= PMemCounter; x++){
+        if (PermanentMemory[x].Name == VaribleName){
+            Found = true;
+        }
+    }
     return Found;
 }
 
@@ -173,12 +158,37 @@ int PullIntFromMemory(string VaribleName){
             return VaribleMemory[x].IValue;
         }
     }
+    for (int x = 0 ; x <= PMemCounter; x++){
+        if (PermanentMemory[x].Name == VaribleName){
+            Found = true;
+            return PermanentMemory[x].IValue;
+        }
+    }
     if (!Found){
         cout << "Error Varible Not Declared: " << VaribleName << "\n";
         ParasiteScriptCoreData.ErrorFlag = true;
         return 0;
     }
 }
+
+Texture2D PullTextureFromMemory(string VaribleName){
+    bool Found = false;
+
+    for (int x = 0 ; x <= TextureCounter; x++){
+        if (TextureMemory[x].Name == VaribleName){
+            Found = true;
+            return TextureMemory[x].TextureValue;
+        }
+    }
+
+    if (!Found){
+        cout << "Error Varible Not Declared: " << VaribleName << "\n";
+        ParasiteScriptCoreData.ErrorFlag = true;
+        Texture2D New;
+        return New;
+    }
+}
+
 
 string PullStrFromMemory(string VaribleName){
     bool Found = false;
@@ -188,6 +198,7 @@ string PullStrFromMemory(string VaribleName){
             return VaribleMemory[x].Value;
         }
     }
+
     if (!Found){
         ParasiteScriptCoreData.ErrorFlag = true;
         return "";
@@ -204,7 +215,17 @@ void StoreIntToMemory(string VaribleName, int Value){
     }
 }
 
-void StoreStrtoMemory(string VaribleName, string Value){
+void StoreIntToPMemory(string VaribleName, int Value){
+    if (ScanVaribleMemory(VaribleName)){
+        for (int x = 0 ; x <= PMemCounter; x++){
+            if (PermanentMemory[x].Name == VaribleName){
+                PermanentMemory[x].IValue = Value;
+            }
+        }
+    }
+}
+
+void StoreStrToMemory(string VaribleName, string Value){
     for (int x = 0 ; x <= VaribleCounter; x++){
         if (VaribleMemory[x].Name == VaribleName){
             VaribleMemory[x].Value = Value;
@@ -279,6 +300,101 @@ void LoadScript(const char *ScriptPath){ // Loads Script
     ParasiteScriptCoreData.LineCounter = 0;
 
 } 
+
+
+void ReplaceValue(int start, int end, std::string &original, const std::string &newValue) {
+    original.replace(start, end - start + 1, newValue);
+}
+
+string ReadLineByIndex(const std::string& filename, int index) {
+    std::ifstream inputFile(filename); // Open the file for reading
+
+    if (!inputFile.is_open()) {
+        std::cerr << "Failed to open the file." << std::endl;
+        return ""; // Return an empty string on failure
+    }
+
+    std::string line;
+    int currentLineIndex = 0;
+
+    while (currentLineIndex < index && std::getline(inputFile, line)) {
+        currentLineIndex++; // Keep track of the current line index
+    }
+
+    inputFile.close(); // Close the file when done
+
+    if (currentLineIndex == index) {
+        return line; // Return the line at the specified index
+    } else {
+        return ""; // Line index not found
+    }
+}
+
+void WritePMemPage(){
+    ofstream PmemFile("GameData/Saves/PMEM");
+
+    PmemFile << NEncode(to_string(PMemCounter), PMemKey) << endl;
+
+    for (int i = 0; i <= PMemCounter - 1; i ++){
+        PmemFile << NEncode(PermanentMemory[i].Name, PMemKey) << " " << NEncode(to_string(PermanentMemory[i].IValue), PMemKey) << endl;
+    }
+
+    PmemFile.close();
+}
+
+void RestorePMemPage(){
+    PMemCounter = StringToInt(NEncode(ReadLineByIndex("GameData/Saves/PMEM" , 1), PMemKey));
+
+    for (int i = 0; i <= PMemCounter - 1; i ++){
+        string PmemValue = NEncode(ReadLineByIndex("GameData/Saves/PMEM" , 2 + i), PMemKey);
+    }
+}
+
+
+void SearchMacroOperation(string &Instruction){ // Macro OP
+    int Start = 0;
+    int End = 0;
+
+    bool Found = false;
+
+    for (int i = 0; i <= Instruction.size() ; i ++){
+        if (Instruction[i] == '('){
+            Start = i;
+        }
+        if (Instruction[i] == ')'){
+            End = i;
+            if (Start != 0){
+                Found = true;
+            }
+            break;
+        }
+    }
+
+    if (Found){
+        string *MacroOperation = NULL; 
+        MacroOperation = new string;   
+        *MacroOperation = ReadValue(Instruction, Start , End);
+        
+
+        cout << "Found Macro Operation -->" << *MacroOperation << endl;
+
+        cout << SplitValue(*MacroOperation , 1) << endl;
+
+        if (SplitValue(*MacroOperation , 1) == "TFlag" && SplitValue(*MacroOperation , 2) == "-->"){
+            int *TValue = NULL;
+            TValue = new int;
+            *TValue = ToggleFlags[StringToInt(SplitValue(Instruction, 3 ))].Value;
+
+            ReplaceValue(Start, End, Instruction , to_string(*TValue) );
+
+            delete TValue;
+            
+        }
+        
+
+        delete MacroOperation;
+    }
+}
 
 static int TimeDelay = 0;
 
@@ -425,7 +541,6 @@ auto CycleInstruction(){
                         Instruction = Part1 + Part2;
                         ParasiteScriptCoreData.Line[ParasiteScriptCoreData.LineCounter] = Instruction;
                     }
-
                     if (SplitValue(Instruction, i) == "*"){
                         string Part1 = "";
                         string Part2 = "";
@@ -489,7 +604,6 @@ auto CycleInstruction(){
                         ParasiteScriptCoreData.Line[ParasiteScriptCoreData.LineCounter] = Instruction;
                          
                     }
-
                     if (SplitValue(Instruction, i) == "/"){
                         string Part1 = "";
                         string Part2 = "";
@@ -614,6 +728,8 @@ auto CycleInstruction(){
                     }
                 }
 
+                SearchMacroOperation(Instruction);
+
                 if (SplitValue(Instruction, 0 ) == "if"){
                     FoundInstruction = true;
 
@@ -711,7 +827,17 @@ auto CycleInstruction(){
                     exit(0);
                 }
 
-                if (SplitValue(Instruction, 0 ) == "var" ){
+                if (SplitValue(Instruction, 0 ) == "jumpl"){   
+                    FoundInstruction = true;
+                    for (int i = 0 ; i <= JumpPointCounter ; i ++){
+                        if (JumpPoints[i].Name == SplitValue(Instruction, 1)){
+                            ParasiteScriptCoreData.ReturnLine = ParasiteScriptCoreData.LineCounter;
+                            ParasiteScriptCoreData.LineCounter = JumpPoints[i].LineNumber;
+                        }
+                    }
+                }
+
+                if (SplitValue(Instruction, 0 ) == "var"){
                     FoundInstruction = true;
                     VaribleMemory[VaribleCounter].Name = SplitValue(Instruction, 1 );
 
@@ -744,39 +870,81 @@ auto CycleInstruction(){
 
                 }
 
-                if (SplitValue(Instruction, 0 ) == "wtflag"){
+                if (SplitValue(Instruction, 0 ) == "PMem"){
+                    FoundInstruction = true;
+
+                    PermanentMemory[PMemCounter].Name = SplitValue(Instruction, 1 );
+
+                    string VaribleData = SplitValue(Instruction, 2 );
+
+                    if (IsNumber(VaribleData)){
+                        PermanentMemory[PMemCounter].IValue = StringToInt(VaribleData);
+
+                        PMemCounter++;   
+                    }
+
+                    else {
+                        cout << "Error Cannot Load Strings Into PMEM" << endl;
+                        ParasiteScriptCoreData.ErrorFlag = true;
+                    }
+                }
+
+                if (SplitValue(Instruction, 0 ) == "Texture"){
+                    FoundInstruction = true;
+
+                    TextureMemory[TextureCounter].Name = SplitValue(Instruction, 1 );
+
+                    if (IsPathFile(TextFormat("GameData/Worlds/World%i/Scripts/Textures/%s.png", SceneIDMirror , SplitValue(Instruction, 2 ).c_str() ))){
+                        TextureMemory[TextureCounter].TextureValue = LoadTexture(TextFormat("GameData/Worlds/World%i/Scripts/Textures/%s.png", SceneIDMirror , SplitValue(Instruction, 2 ).c_str() ));
+                        TextureCounter ++;
+                    }
+
+                    else {
+                        cout << "Texture Does Not Exist:" << TextFormat("GameData/Worlds/World%i/Scripts/Textures/%s.png", SceneIDMirror , SplitValue(Instruction, 2 ).c_str() ) << endl;
+                        ParasiteScriptCoreData.ErrorFlag = true;
+                    }
+
+
+    
+                }
+
+                if (SplitValue(Instruction, 0 ) == "WriteTFlag"){
                     ToggleFlags[StringToInt(SplitValue(Instruction, 1 ))].Value = StringToInt(SplitValue(Instruction, 2));
                     FoundInstruction = true;
                 }
 
-                if (SplitValue(Instruction, 0 ) == "rtflag"){
+
+                if (SplitValue(Instruction, 0 ) == "ReadTFlag"){
                     int Value = ToggleFlags[StringToInt(SplitValue(Instruction, 1 ))].Value;
                     StoreIntToMemory(SplitValue(Instruction, 2), Value);
                     FoundInstruction = true;
                 }
 
-                if (SplitValue(Instruction, 0 ) == "say"){
-                    OmegaTechTextSystem.Write(ReadValue(Instruction , 4 , Instruction.size() - 1));
+                if (SplitValue(Instruction, 0 ) == "WriteDialogue"){
+                    string Arg = ReadValue(Instruction , 14, Instruction.size() - 1);
+
+                    if (IsNumber(Arg)){ // Pull from LG Langauge Pack
+                        OmegaTechTextSystem.Write(GlobalPackData.Lines[StringToInt(SplitValue(Instruction, 1))]);
+                    }
+                    else {
+                        OmegaTechTextSystem.Write(Arg);
+                    }
                     FoundInstruction = true;
                 }
 
-                if (SplitValue(Instruction, 0 ) == "saypack"){
-                    OmegaTechTextSystem.Write(GlobalPackData.Lines[StringToInt(SplitValue(Instruction, 1))]);
-                    FoundInstruction = true;
-                }
-
-                if (SplitValue(Instruction, 0 ) == "addwdli"){
+                if (SplitValue(Instruction, 0 ) == "AddWDLInstruction"){
                     string WDLString = SplitValue(Instruction, 1 );
                     wstring ws(WDLString.begin(), WDLString.end());
                     ExtraWDLInstructions += ws;
                     FoundInstruction = true;
                 }
-                if (SplitValue(Instruction, 0 ) == "clrwdli"){
+
+                if (SplitValue(Instruction, 0 ) == "WipeExtraWDL"){
                     ExtraWDLInstructions = L"";
                     FoundInstruction = true;
                 }
 
-                if (SplitValue(Instruction, 0 ) == "ownobj"){
+                if (SplitValue(Instruction, 0 ) == "ClaimOBJ"){
                     int ObjectId = StringToInt(SplitValue(Instruction, 1));
 
                     switch (ObjectId){
@@ -790,10 +958,10 @@ auto CycleInstruction(){
                             OmegaTechGameObjects.Object3Owned = true;
                             break;
                         case 4:
-                            OmegaTechGameObjects.Object3Owned = true;
+                            OmegaTechGameObjects.Object4Owned = true;
                             break;
                         case 5:
-                            OmegaTechGameObjects.Object3Owned = true;
+                            OmegaTechGameObjects.Object5Owned = true;
                             break;
                     }
 
@@ -801,17 +969,17 @@ auto CycleInstruction(){
                 }
                 
 
-                if (SplitValue(Instruction, 0 ) == "setscene"){
+                if (SplitValue(Instruction, 0 ) == "SetScene"){
                     SetSceneFlag = true;
                     SetSceneId = StringToInt(SplitValue(Instruction, 1 ));
                     FoundInstruction = true;
                 }
 
-                if (SplitValue(Instruction, 0 ) == "kill"){
-                    ParasiteScriptCoreData.LineCounter = ParasiteScriptCoreData.ProgramSize;
+                if (SplitValue(Instruction, 0 ) == "Kill"){
+                    ParasiteRunning = false;
                     FoundInstruction = true;
                 }
-                if (SplitValue(Instruction, 0 ) == "setcampos"){
+                if (SplitValue(Instruction, 0 ) == "SetCameraPosition"){
                     SetCameraFlag = true;
 
                     int X = StringToInt(SplitValue(Instruction, 1 ));
@@ -822,7 +990,8 @@ auto CycleInstruction(){
 
                     FoundInstruction = true;
                 }
-                if (SplitValue(Instruction, 0 ) == "setsunpos"){
+
+                if (SplitValue(Instruction, 0 ) == "SetMainLightPosition"){
 
                     int X = StringToInt(SplitValue(Instruction, 1 ));
                     int Y = StringToInt(SplitValue(Instruction, 2 ));
@@ -831,6 +1000,108 @@ auto CycleInstruction(){
                     SunPos = {float(X) ,float(Y),float(Z)};
                     
                     FoundInstruction = true;
+                }
+
+                if (SplitValue(Instruction, 0 ) == "PullMouse"){
+                    FoundInstruction = true;
+
+                    StoreIntToMemory( SplitValue(Instruction, 1 ), GetMouseX());
+                    StoreIntToMemory( SplitValue(Instruction, 2 ), GetMouseY());
+                }
+
+                if (SplitValue(Instruction, 0 ) == "PullInputs "){
+                    FoundInstruction = true;
+
+                    int InpValue = 0;
+
+                    if (!IsGamepadAvailable(0)){
+                        if (IsKeyDown(KEY_LEFT)){
+                            InpValue = 4;
+                        }
+                        if (IsKeyDown(KEY_RIGHT)){
+                            InpValue = 2;
+                        }
+                        if (IsKeyDown(KEY_UP)){
+                            InpValue = 1;
+                        }
+                        if (IsKeyDown(KEY_DOWN)){
+                            InpValue = 3;
+                        }    
+                        if (IsKeyDown(KEY_SPACE)){
+                            InpValue = 5;
+                        }
+                        if (IsKeyDown(KEY_A)){
+                            InpValue = 6;
+                        }
+                        if (IsKeyDown(KEY_S)){
+                            InpValue = 7;
+                        }
+                    }
+                    else {
+                        if (GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_X) >= 0.5f){
+                            InpValue = 2;
+                        }
+                        if (GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_X) <= -0.5f){
+                            InpValue = 4;
+                        }
+
+                        if (GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_Y) >= 0.5f){
+                            InpValue = 3;
+                        }
+                        if (GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_Y) <= -0.5f){
+                            InpValue = 1;
+                        }
+
+                        if (IsGamepadButtonDown(0 , GAMEPAD_BUTTON_LEFT_FACE_UP)){
+                            InpValue = 1;
+                        }
+                        if (IsGamepadButtonDown(0 , GAMEPAD_BUTTON_LEFT_FACE_DOWN)){
+                            InpValue = 3;
+                        }
+                        if (IsGamepadButtonDown(0 , GAMEPAD_BUTTON_LEFT_FACE_RIGHT)){
+                            InpValue = 2;
+                        }
+                        if (IsGamepadButtonDown(0 , GAMEPAD_BUTTON_LEFT_FACE_LEFT)){
+                            InpValue = 4;
+                        }
+
+                        if (IsGamepadButtonDown(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)){
+                            InpValue = 6;
+                        }
+                        if (IsGamepadButtonDown(0, GAMEPAD_BUTTON_RIGHT_FACE_LEFT)){
+                            InpValue = 7;
+                        }
+
+                        if (IsGamepadButtonDown(0, GAMEPAD_BUTTON_RIGHT_FACE_RIGHT)){
+                            InpValue = 5;
+                        }
+                    }
+                    
+                    StoreIntToMemory(SplitValue(Instruction, 1 ) , InpValue);
+                }
+
+                if (SplitValue(Instruction, 0 ) == "DrawFrame"){
+
+                    BeginTextureMode(ParasiteTarget);
+                    ClearBackground(BLACK);
+
+                }
+
+                if (SplitValue(Instruction, 0 ) == "DrawTexture"){
+                    int X = StringToInt(SplitValue(Instruction, 2 ));
+                    int Y = StringToInt(SplitValue(Instruction, 3 ));
+                    int Scale = StringToInt(SplitValue(Instruction, 4 ));
+
+                    DrawTextureEx(PullTextureFromMemory(SplitValue(Instruction, 1 )) , {X , Y} , 0 , Scale, WHITE);
+                }
+
+
+                if (SplitValue(Instruction, 0 ) == "EndFrame"){
+                    EndTextureMode();
+
+                    BeginDrawing();
+                        DrawTexturePro(ParasiteTarget.texture, (Rectangle){ 0, 0, ParasiteTarget.texture.width, -ParasiteTarget.texture.height }, (Rectangle){ 0, 0, float(GetScreenWidth()), float(GetScreenHeight())}, (Vector2){ 0, 0 } , 0.f , WHITE);
+                    EndDrawing();
                 }
             }
         }

@@ -5,7 +5,6 @@
 #include "Video.hpp"
 #include "ParticleDemon/ParticleDemon.hpp"
 #include "Parasite/ParasiteScript.hpp"
-#include "Encoder/Encoder.hpp"
 #include "Entities.hpp"
 
 #include <string>
@@ -262,6 +261,32 @@ void ConsoleParseCommand(const char* Command){
         if (ExportMesh(WDLModels.HeightMap.meshes[0], "Terrain.obj")){
             PrintConsole("Done.. Stored in Terrain.obj\n");
         }
+
+        Found = true;
+    }
+
+    if (CommandValue == "WipePMem"){
+        PrintConsole("Wiping Memory Page\n");
+
+        ofstream PmemFile("GameData/Saves/PMEM");
+        PmemFile << "";
+        PmemFile.close();
+
+        PrintConsole("Done.\n");
+
+        Found = true;
+    }
+
+
+    if (CommandValue == "DumpPMem"){
+        PrintConsole("Dumping Memory Page\n");
+
+        for (int i = 0; i <= PMemCounter - 1; i ++){
+            PrintConsole(TextFormat("%s : %i\n" , PermanentMemory[i].Name.c_str() , PermanentMemory[i].IValue));
+
+        }
+
+        PrintConsole("Done.\n");
 
         Found = true;
     }
