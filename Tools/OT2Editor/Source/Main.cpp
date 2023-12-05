@@ -41,10 +41,17 @@ int main(int argc, char **argv){
             }
         }
 
-        for (int i = 0 ; i <= 7 ; i ++){
-            if(!OverlayEnabled && !IsMouseButtonDown(0 )&& !IsMouseButtonDown(1))UpdateCamera(&OTEditor.MainCamera, CAMERA_FIRST_PERSON);
+        if (IsKeyDown(KEY_SPACE)){
+            for (int i = 0 ; i <= 5 ; i ++){
+                if(!OverlayEnabled && !IsMouseButtonDown(0 )&& !IsMouseButtonDown(1))UpdateCamera(&OTEditor.MainCamera, CAMERA_FIRST_PERSON);
+            }
         }
-        
+
+        else {
+            for (int i = 0 ; i <= 1 ; i ++){
+                if(!OverlayEnabled && !IsMouseButtonDown(0 )&& !IsMouseButtonDown(1))UpdateCamera(&OTEditor.MainCamera, CAMERA_FIRST_PERSON);
+            }
+        }
         BeginTextureMode(Target);
         ClearBackground(BLACK);
 
@@ -132,7 +139,8 @@ int main(int argc, char **argv){
                     DrawCubeWires({OmegaTechEditor.W, OmegaTechEditor.H, OmegaTechEditor.L}, OmegaTechEditor.S, OmegaTechEditor.S, OmegaTechEditor.S, PINK);
                     break;
                 case -2:
-                    DrawBoundingBox((BoundingBox){(Vector3){OmegaTechEditor.X, OmegaTechEditor.Y, OmegaTechEditor.Z}, (Vector3){OmegaTechEditor.W, OmegaTechEditor.H - 5, OmegaTechEditor.L}}, ORANGE);
+                    DrawBoundingBox((BoundingBox){(Vector3){OmegaTechEditor.X, OmegaTechEditor.Y, OmegaTechEditor.Z}, (Vector3){OmegaTechEditor.W, OmegaTechEditor.H, OmegaTechEditor.L}}, ORANGE);
+                    DrawBoundingBox((BoundingBox){(Vector3){OmegaTechEditor.X, OmegaTechEditor.Y, OmegaTechEditor.Z}, (Vector3){OmegaTechEditor.W, OmegaTechEditor.H - 10, OmegaTechEditor.L}}, PURPLE);
                     DrawCubeWires({OmegaTechEditor.W, OmegaTechEditor.H - 5, OmegaTechEditor.L}, OmegaTechEditor.S, OmegaTechEditor.S, OmegaTechEditor.S, PINK);
                     break;
                 }
@@ -309,6 +317,15 @@ int main(int argc, char **argv){
         }
 
         EndDrawing();
+
+        if (OTEditor.MainCamera.position.z >= 0 && OTEditor.MainCamera.position.z <= WDLModels.HeightMapW){
+            if (OTEditor.MainCamera.position.x >= 0 && OTEditor.MainCamera.position.x <= WDLModels.HeightMapW){
+
+                if (IsKeyDown(KEY_W) || IsKeyDown(KEY_A) || IsKeyDown(KEY_S) || IsKeyDown(KEY_D)){
+                    OTEditor.MainCamera.position.y = 8 + TerrainHeightMap[int(OTEditor.MainCamera.position.z)][int(OTEditor.MainCamera.position.x)];
+                }
+            }
+        }
 
         if (IsKeyPressed(KEY_F11)){
             ToggleFullscreen();

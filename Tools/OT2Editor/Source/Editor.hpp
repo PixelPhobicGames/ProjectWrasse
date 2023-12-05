@@ -2,10 +2,40 @@
 #include <cstring>
 
 #define MaxCachedModels 200
+#define MaxMapSize 2000
 
 RenderTexture2D Target;
 RenderTexture2D PreviewTarget;
 Model CurrentModel;
+
+static float TerrainHeightMap[MaxMapSize][MaxMapSize];
+
+void GenHeights(Image heightmap, Vector3 size)
+{
+    #define GRAY_VALUE(c) ((float)(c.r + c.g + c.b) / 3.0f)
+
+    int mapX = size.x;
+    int mapZ = size.z;
+    
+    for (int z = 0; z < mapX - 1; z++){
+        for (int x = 0; x < mapZ - 1; x++){
+            TerrainHeightMap[z][x] = 0.0f;
+        }
+    }
+
+    Color *pixels = LoadImageColors(heightmap);
+
+    float Scale = heightmap.width / size.x;
+    
+    for (int z = 0; z < (mapZ)- 1; z++)
+    {
+        for (int x = 0; x < (mapX) - 1; x++)
+        {
+            float Index = ((x * Scale) + (z * Scale) * heightmap.width);
+            TerrainHeightMap[z][x] = GRAY_VALUE(pixels[int(Index)]) / (255 / size.y);
+        }
+    }
+}
 
 class Editor{
     public:
@@ -27,6 +57,9 @@ class GameModels
         Vector3 HeightMapPosition;
 
         // OBJ Models
+
+        int HeightMapW = 0;
+        int HeightMapH = 0;
 
         Model HeightMap;
         Texture2D HeightMapTexture;
@@ -179,16 +212,19 @@ void Init(){
 
     if (IsPathFile(TextFormat("%s/Models/HeightMap.png", OTEditor.Path)))
     {
+        WDLModels.HeightMapW = PullConfigValue(TextFormat("%sConfig/HeightMap.conf", OTEditor.Path) , 0);
+        WDLModels.HeightMapH = PullConfigValue(TextFormat("%sConfig/HeightMap.conf", OTEditor.Path) , 1);
         WDLModels.HeightMapTexture = LoadTexture(TextFormat("%sModels/HeightMapTexture.png", OTEditor.Path));
         Image HeightMapImage = LoadImage(TextFormat("%sModels/HeightMap.png", OTEditor.Path));
         Texture2D Texture = LoadTextureFromImage(HeightMapImage);
-        int X = PullConfigValue(TextFormat("%sModels/HeightMapConfig.conf", OTEditor.Path), 0);
-        int Y = PullConfigValue(TextFormat("%sModels/HeightMapConfig.conf", OTEditor.Path), 1);
-        int Z = PullConfigValue(TextFormat("%sModels/HeightMapConfig.conf", OTEditor.Path), 2);
-        Mesh Mesh1 = GenMeshHeightmap(HeightMapImage, (Vector3){X, Y, Z});
+
+        Mesh Mesh1 = GenMeshHeightmap(HeightMapImage, (Vector3){WDLModels.HeightMapW, WDLModels.HeightMapH, WDLModels.HeightMapW});
+
         WDLModels.HeightMap = LoadModelFromMesh(Mesh1);
         WDLModels.HeightMap.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = WDLModels.HeightMapTexture;
         WDLModels.HeightMap.meshes[0] = Mesh1;
+
+        GenHeights(HeightMapImage, {(Vector3){WDLModels.HeightMapW, WDLModels.HeightMapH, WDLModels.HeightMapW}});
     }
 
     if (IsPathFile(TextFormat("%sModels/Model1.obj", OTEditor.Path)))
@@ -896,7 +932,7 @@ void RenderPreview(){
 
     DrawGrid(10, 1.0f);  
 
-    PreviewEMID = int((GetMouseY() - 32) / 32);
+    PreviewEMID = int(((GetMouseY()) / 32));
 
     switch (PreviewEMID){
         case 1:
