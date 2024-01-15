@@ -86,7 +86,6 @@ auto LoadWorld() {
         }
 
         if (IsPathFile(TextFormat("GameData/Worlds/World%i/Models/Skybox.png", OmegaTechData.LevelIndex))) {
-
             WDLModels.Skybox =
                 LoadTexture(TextFormat("GameData/Worlds/World%i/Models/Skybox.png", OmegaTechData.LevelIndex));
             OmegaTechData.SkyboxEnabled = true;
@@ -734,7 +733,6 @@ void LoadLaunchConfig() {
 int LightCounter = 1;
 
 void UpdateLightSources() {
-
     float CameraPos[3] = {OmegaTechData.MainCamera.position.x,
                           OmegaTechData.MainCamera.position.y,
                           OmegaTechData.MainCamera.position.z};
@@ -956,7 +954,6 @@ void PlayHomeScreen() {
         GuiLine((Rectangle){168, 296, 216, 16}, NULL);
 
         if (GuiButton((Rectangle){184, 200, 184, 40}, "Start")) {
-
             if (LDropdownBoxActive == EnglishPack) {
                 LoadLanguagePack(EnglishPack, &GlobalPackData);
             }
@@ -983,7 +980,6 @@ void PlayHomeScreen() {
         }
 
         if (GuiButton((Rectangle){184, 256, 184, 40}, "Load")) {
-
             UnloadRenderTexture(Target);
             Target = LoadRenderTexture(GetScreenWidth() / 4, GetScreenHeight() / 4);
 
@@ -1067,7 +1063,6 @@ void CacheWDL() {
     }
 
     for (int i = 0; i <= GetWDLSize(WorldData, L""); i++) {
-
         if (CachedModelCounter == MaxCachedModels)
             break;
 
@@ -1407,7 +1402,6 @@ int FlipNumber(int num) {
 }
 
 void WDLProcess() {
-
     int Size = 0;
 
     FinalWDL = L"";
@@ -1439,7 +1433,6 @@ void WDLProcess() {
             WReadValue(Instruction, 0, 6) == L"ClipBox" || WReadValue(Instruction, 0, 5) == L"Object" ||
             WReadValue(Instruction, 0, 5) == L"Script" || WReadValue(Instruction, 0, 8) == L"HeightMap" ||
             WReadValue(Instruction, 0, 8) == L"Collision" || WReadValue(Instruction, 0, 11) == L"AdvCollision") {
-
             X = ToFloat(WSplitValue(FinalWDL, i + 1));
             Y = ToFloat(WSplitValue(FinalWDL, i + 2));
             Z = ToFloat(WSplitValue(FinalWDL, i + 3));
@@ -1655,7 +1648,6 @@ void WDLProcess() {
         }
 
         if (Instruction == L"ClipBox") {
-
             W = ToFloat(WSplitValue(FinalWDL, i + 6));
             H = ToFloat(WSplitValue(FinalWDL, i + 7));
             L = ToFloat(WSplitValue(FinalWDL, i + 8));
@@ -1678,7 +1670,6 @@ void WDLProcess() {
             i += 3;
         }
         if (Instruction == L"AdvCollision") { // Collision
-
             if (Render) {
                 W = ToFloat(WSplitValue(FinalWDL, i + 6));
                 H = ToFloat(WSplitValue(FinalWDL, i + 7));
@@ -1787,7 +1778,6 @@ void UpdatePlayer() {
         if (OmegaTechData.MainCamera.position.z >= 0 && OmegaTechData.MainCamera.position.z <= WDLModels.HeightMapW) {
             if (OmegaTechData.MainCamera.position.x >= 0 &&
                 OmegaTechData.MainCamera.position.x <= WDLModels.HeightMapW) {
-
                 if (IsKeyDown(KEY_W) || IsKeyDown(KEY_A) || IsKeyDown(KEY_S) || IsKeyDown(KEY_D)) {
                     OmegaTechData.MainCamera.position.y = 8 +
                                                           TerrainHeightMap[int(OmegaTechData.MainCamera.position.z)]
