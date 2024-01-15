@@ -115,6 +115,3 @@ typedef struct ParasiteScriptData{
 static ParasiteScriptData ParasiteScriptCoreData;
 
 static Pack GlobalPackData;
-
-
-
