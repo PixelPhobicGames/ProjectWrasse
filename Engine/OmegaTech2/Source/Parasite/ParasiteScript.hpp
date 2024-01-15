@@ -273,7 +273,6 @@ void LoadScript(const char *ScriptPath){ // Loads Script
     string CurrentLine;
 
     while (getline(ProgramData, CurrentLine)) {
-
         if (ReadValue(CurrentLine, 0 , 0) == ":"){            
             JumpPoints[JumpPointCounter].Name = ReadValue(CurrentLine, 1 , CurrentLine.size() - 1);
             JumpPoints[JumpPointCounter].LineNumber = ParasiteScriptCoreData.LineCounter;
@@ -292,13 +291,10 @@ void LoadScript(const char *ScriptPath){ // Loads Script
         }
         ParasiteScriptCoreData.Line[ParasiteScriptCoreData.LineCounter] = CurrentLine;
         ParasiteScriptCoreData.LineCounter ++;
-        
-
     } 
+
     ParasiteScriptCoreData.ProgramSize = ParasiteScriptCoreData.LineCounter;
-
     ParasiteScriptCoreData.LineCounter = 0;
-
 } 
 
 
@@ -388,7 +384,6 @@ void SearchMacroOperation(string &Instruction){ // Macro OP
             ReplaceValue(Start, End, Instruction , to_string(*TValue) );
 
             delete TValue;
-            
         }
         
 
@@ -401,7 +396,6 @@ static int TimeDelay = 0;
 auto CycleInstruction(){
     if (TimeDelay == 0){
         if (ParasiteScriptCoreData.LineCounter != ParasiteScriptCoreData.ProgramSize){
-
             bool FoundInstruction = false;
             
             string Instruction = ParasiteScriptCoreData.Line[ParasiteScriptCoreData.LineCounter];
@@ -478,7 +472,6 @@ auto CycleInstruction(){
                         Instruction = '\0';
                         Instruction = Part1 + Part2;
                         ParasiteScriptCoreData.Line[ParasiteScriptCoreData.LineCounter] = Instruction;
-                         
                     }
                     if (SplitValue(Instruction, i) == "-"){
                         string Part1 = "";
@@ -602,7 +595,6 @@ auto CycleInstruction(){
                         Instruction = '\0';
                         Instruction = Part1 + Part2;
                         ParasiteScriptCoreData.Line[ParasiteScriptCoreData.LineCounter] = Instruction;
-                         
                     }
                     if (SplitValue(Instruction, i) == "/"){
                         string Part1 = "";
@@ -664,8 +656,7 @@ auto CycleInstruction(){
                     
                         Instruction = '\0';
                         Instruction = Part1 + Part2;
-                        ParasiteScriptCoreData.Line[ParasiteScriptCoreData.LineCounter] = Instruction;
-                         
+                        ParasiteScriptCoreData.Line[ParasiteScriptCoreData.LineCounter] = Instruction; 
                     }
                 }
 
@@ -867,7 +858,6 @@ auto CycleInstruction(){
                     }
 
                     VaribleCounter++;   
-
                 }
 
                 if (SplitValue(Instruction, 0 ) == "PMem"){
@@ -904,15 +894,12 @@ auto CycleInstruction(){
                         ParasiteScriptCoreData.ErrorFlag = true;
                     }
 
-
-    
                 }
 
                 if (SplitValue(Instruction, 0 ) == "WriteTFlag"){
                     ToggleFlags[StringToInt(SplitValue(Instruction, 1 ))].Value = StringToInt(SplitValue(Instruction, 2));
                     FoundInstruction = true;
                 }
-
 
                 if (SplitValue(Instruction, 0 ) == "ReadTFlag"){
                     int Value = ToggleFlags[StringToInt(SplitValue(Instruction, 1 ))].Value;
@@ -992,7 +979,6 @@ auto CycleInstruction(){
                 }
 
                 if (SplitValue(Instruction, 0 ) == "SetMainLightPosition"){
-
                     int X = StringToInt(SplitValue(Instruction, 1 ));
                     int Y = StringToInt(SplitValue(Instruction, 2 ));
                     int Z = StringToInt(SplitValue(Instruction, 3 ));
@@ -1081,10 +1067,8 @@ auto CycleInstruction(){
                 }
 
                 if (SplitValue(Instruction, 0 ) == "DrawFrame"){
-
                     BeginTextureMode(ParasiteTarget);
                     ClearBackground(BLACK);
-
                 }
 
                 if (SplitValue(Instruction, 0 ) == "DrawTexture"){
