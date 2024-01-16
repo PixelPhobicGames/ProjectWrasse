@@ -3,6 +3,8 @@
 /* OT:2: PixelPhobicGames 2023 */
 
 int main() {
+    
+    SetConfigFlags(FLAG_VSYNC_HINT);
 
     InitWindow(1280, 720, "NOSTOMANIA DEMO - OT2");
     SetTargetFPS(60);
@@ -12,8 +14,6 @@ int main() {
     if (!IsAudioDeviceReady()) {
         CloseAudioDevice();
     }
-
-    SetConfigFlags(FLAG_VSYNC_HINT);
 
     PlayLogo();
 
