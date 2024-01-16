@@ -30,5 +30,11 @@
 *.exe
 *.out
 *.app
+
+# GameData 
+
+Engine/OmegaTech2/GameData
+
 # Linux Ex 
-OmegaTech
+
+OTENGINE
