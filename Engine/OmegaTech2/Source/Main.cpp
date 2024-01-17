@@ -5,6 +5,7 @@
 int main() {
     
     SetConfigFlags(FLAG_VSYNC_HINT);
+    SetConfigFlags(FLAG_MSAA_4X_HINT);
 
     InitWindow(1280, 720, "NOSTOMANIA DEMO - OT2");
     SetTargetFPS(60);
@@ -89,14 +90,7 @@ int main() {
             }
 
             if (ScriptCollisionMessage) {
-                DrawTextEx(OmegaTechTextSystem.BarFont,
-                           "Press Left Click to Interact",
-                           {GetScreenWidth() / 2 -
-                                MeasureTextEx(OmegaTechTextSystem.BarFont, "Press Left Click to Interact", 25, 1).x / 2,
-                            720 / 2},
-                           25,
-                           1,
-                           WHITE);
+                DisplayInteractText();
             }
 
             if (OmegaTechData.Ticker == 33 || OmegaInputController.InteractPressed || OmegaInputController.TextButton) {
@@ -146,6 +140,10 @@ int main() {
 
         if (IsKeyPressed(KEY_F11))
             ToggleFullscreen();
+
+        if (IsWindowResized()){
+            SetWindowSize(1280 , 720);
+        }
 
         if (IsKeyPressed(KEY_F3)) {
             if (ConsoleToggle) {

@@ -92,7 +92,7 @@ void UpdateCustom(int ID) {
     if (GrassEnabled) {
 
         if (GrassTicker != 60 * 3) {
-            if (IsKeyDown(KEY_W) || IsKeyDown(KEY_A) || IsKeyDown(KEY_S) || IsKeyDown(KEY_D))
+            if (IsKeyDown(KEY_W) || IsKeyDown(KEY_A) || IsKeyDown(KEY_S) || IsKeyDown(KEY_D) || GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_Y) != 0 || GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_X) != 0)
                 GrassTicker++;
         } else {
             GrassTicker = 0;

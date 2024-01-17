@@ -954,8 +954,17 @@ auto CycleInstruction(){
                 if (SplitValue(Instruction, 0 ) == "PullMouse"){
                     FoundInstruction = true;
 
-                    StoreIntToMemory( SplitValue(Instruction, 1 ), GetMouseX());
-                    StoreIntToMemory( SplitValue(Instruction, 2 ), GetMouseY());
+                    if (IsGamepadAvailable(0)){
+                        VirtualMouseY += GetGamepadAxisMovement(0 , GAMEPAD_AXIS_LEFT_Y);
+                        VirtualMouseX += GetGamepadAxisMovement(0 , GAMEPAD_AXIS_LEFT_X);
+
+                        StoreIntToMemory( SplitValue(Instruction, 1 ), VirtualMouseX);
+                        StoreIntToMemory( SplitValue(Instruction, 2 ), VirtualMouseY);
+                    }
+                    else {
+                        StoreIntToMemory( SplitValue(Instruction, 1 ), GetMouseX());
+                        StoreIntToMemory( SplitValue(Instruction, 2 ), GetMouseY());
+                    }
                 }
 
                 if (SplitValue(Instruction, 0 ) == "PullInputs"){
@@ -963,74 +972,33 @@ auto CycleInstruction(){
 
                     int InpValue = 0;
 
-                    if (!IsGamepadAvailable(0)){
-                        if (IsKeyDown(KEY_LEFT)){
-                            InpValue = 4;
-                        }
-                        if (IsKeyDown(KEY_RIGHT)){
-                            InpValue = 2;
-                        }
-                        if (IsKeyDown(KEY_UP)){
-                            InpValue = 1;
-                        }
-                        if (IsKeyDown(KEY_DOWN)){
-                            InpValue = 3;
-                        }    
-                        if (IsKeyDown(KEY_SPACE)){
-                            InpValue = 5;
-                        }
-                        if (IsKeyDown(KEY_A)){
-                            InpValue = 6;
-                        }
-                        if (IsKeyDown(KEY_S)){
-                            InpValue = 7;
-                        }
-
-                        if (IsMouseButtonPressed(0)){
-                            InpValue = 8;
-                        }
-                        if (IsMouseButtonPressed(1)){
-                            InpValue = 9;
-                        }
+                    if (IsKeyDown(KEY_LEFT) || IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_LEFT)){
+                        InpValue = 4;
                     }
-                    else {
-                        if (GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_X) >= 0.5f){
-                            InpValue = 2;
-                        }
-                        if (GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_X) <= -0.5f){
-                            InpValue = 4;
-                        }
+                    if (IsKeyDown(KEY_RIGHT) || IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_RIGHT)){
+                        InpValue = 2;
+                    }
+                    if (IsKeyDown(KEY_UP) || IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_UP)){
+                        InpValue = 1;
+                    }
+                    if (IsKeyDown(KEY_DOWN) || IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN)){
+                        InpValue = 3;
+                    }    
+                    if (IsKeyDown(KEY_SPACE) || IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)){
+                        InpValue = 5;
+                    }
+                    if (IsKeyDown(KEY_A) || IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_RIGHT)){
+                        InpValue = 6;
+                    }
+                    if (IsKeyDown(KEY_S) || IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_LEFT)){
+                        InpValue = 7;
+                    }
 
-                        if (GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_Y) >= 0.5f){
-                            InpValue = 3;
-                        }
-                        if (GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_Y) <= -0.5f){
-                            InpValue = 1;
-                        }
-
-                        if (IsGamepadButtonDown(0 , GAMEPAD_BUTTON_LEFT_FACE_UP)){
-                            InpValue = 1;
-                        }
-                        if (IsGamepadButtonDown(0 , GAMEPAD_BUTTON_LEFT_FACE_DOWN)){
-                            InpValue = 3;
-                        }
-                        if (IsGamepadButtonDown(0 , GAMEPAD_BUTTON_LEFT_FACE_RIGHT)){
-                            InpValue = 2;
-                        }
-                        if (IsGamepadButtonDown(0 , GAMEPAD_BUTTON_LEFT_FACE_LEFT)){
-                            InpValue = 4;
-                        }
-
-                        if (IsGamepadButtonDown(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)){
-                            InpValue = 6;
-                        }
-                        if (IsGamepadButtonDown(0, GAMEPAD_BUTTON_RIGHT_FACE_LEFT)){
-                            InpValue = 7;
-                        }
-
-                        if (IsGamepadButtonDown(0, GAMEPAD_BUTTON_RIGHT_FACE_RIGHT)){
-                            InpValue = 5;
-                        }
+                    if (IsMouseButtonPressed(0) || IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_TRIGGER_1)){
+                        InpValue = 8;
+                    }
+                    if (IsMouseButtonPressed(1) || IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_TRIGGER_1)){
+                        InpValue = 9;
                     }
                     
                     StoreIntToMemory(SplitValue(Instruction, 1 ) , InpValue);
@@ -1064,6 +1032,8 @@ auto CycleInstruction(){
                     if (StringToInt(SplitValue(Instruction, 1 )) == 1){
                         ShowCursor();
                         EnableCursor();
+                        VirtualMouseX = GetScreenWidth() / 2;
+                        VirtualMouseY = GetScreenHeight() / 2;
                     }
                     else {
                         HideCursor();

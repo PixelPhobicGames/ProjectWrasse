@@ -23,6 +23,9 @@ using namespace std;
 #define MaxTFlag 100
 #define MaxArrays 1
 
+static int VirtualMouseX = 0;
+static int VirtualMouseY = 0;
+
 static int SceneIDMirror = 0;
 
 static bool MapClipping = true;

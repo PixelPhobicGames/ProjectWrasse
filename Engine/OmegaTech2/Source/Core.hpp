@@ -1757,7 +1757,7 @@ void UpdatePlayer() {
         }
     }
 
-    if (IsKeyDown(KEY_W) || IsKeyDown(KEY_A) || IsKeyDown(KEY_S) || IsKeyDown(KEY_D)) {
+    if (IsKeyDown(KEY_W) || IsKeyDown(KEY_A) || IsKeyDown(KEY_S) || IsKeyDown(KEY_D) || GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_Y) != 0 || GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_X) != 0) {
         if (!IsSoundPlaying(OmegaTechSoundData.WalkingSound)) {
             PlaySound(OmegaTechSoundData.WalkingSound);
         }
@@ -1778,7 +1778,7 @@ void UpdatePlayer() {
         if (OmegaTechData.MainCamera.position.z >= 0 && OmegaTechData.MainCamera.position.z <= WDLModels.HeightMapW) {
             if (OmegaTechData.MainCamera.position.x >= 0 &&
                 OmegaTechData.MainCamera.position.x <= WDLModels.HeightMapW) {
-                if (IsKeyDown(KEY_W) || IsKeyDown(KEY_A) || IsKeyDown(KEY_S) || IsKeyDown(KEY_D)) {
+                if (IsKeyDown(KEY_W) || IsKeyDown(KEY_A) || IsKeyDown(KEY_S) || IsKeyDown(KEY_D) || GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_Y) != 0 || GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_X) != 0) {
                     OmegaTechData.MainCamera.position.y = 8 +
                                                           TerrainHeightMap[int(OmegaTechData.MainCamera.position.z)]
                                                                           [int(OmegaTechData.MainCamera.position.x)];
@@ -1956,5 +1956,28 @@ void DrawWorld() {
         OmegaTechData.Ticker++;
     } else {
         OmegaTechData.Ticker = 0;
+    }
+}
+
+void DisplayInteractText(){
+    if (!IsGamepadAvailable(0)){
+        DrawTextEx(OmegaTechTextSystem.BarFont,
+                "Press Left Click to Interact",
+                {GetScreenWidth() / 2 -
+                        MeasureTextEx(OmegaTechTextSystem.BarFont, "Press Left Click to Interact", 25, 1).x / 2,
+                    720 / 2},
+                25,
+                1,
+                WHITE);
+    }
+    else {
+        DrawTextEx(OmegaTechTextSystem.BarFont,
+            "Press A to Interact",
+            {GetScreenWidth() / 2 -
+                    MeasureTextEx(OmegaTechTextSystem.BarFont, "Press A to Interact", 25, 1).x / 2,
+                720 / 2},
+            25,
+            1,
+            WHITE);
     }
 }

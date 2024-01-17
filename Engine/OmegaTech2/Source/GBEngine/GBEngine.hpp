@@ -113,7 +113,8 @@ void gb_error(struct gb_s *gb, const enum gb_error_e gb_err, const uint16_t val)
 
 void lcd_draw_line(struct gb_s *gb, const uint8_t pixels[160], const uint_least8_t line)
 {
-    const uint32_t palette[] = { 0xfaa3a3FF, 0x871c1cFF, 0x792a2aFF, 0x6a3939FF };
+    const uint32_t palette[] = { 0x9bbc0fFF, 0x8bac0fFF, 0x306230FF, 0x0f380fFF };
+
 
     for (unsigned int x = 0; x < LCD_WIDTH; x++)
     {
@@ -197,42 +198,42 @@ void RunGB(){
 
         EndDrawing();
 
-        if (IsKeyDown(KEY_W)){
+        if (IsKeyDown(KEY_W) || IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_UP)){
             gb.direct.joypad_bits.up = false;
         }
         else {
             gb.direct.joypad_bits.up = true;
         }
 
-        if (IsKeyDown(KEY_S)){
+        if (IsKeyDown(KEY_S) || IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN)){
             gb.direct.joypad_bits.down = false;
         }
         else {
             gb.direct.joypad_bits.down = true;
         }
 
-        if (IsKeyDown(KEY_A)){
+        if (IsKeyDown(KEY_A) || IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_LEFT)){
             gb.direct.joypad_bits.left = false;
         }
         else {
             gb.direct.joypad_bits.left = true;
         }
 
-        if (IsKeyDown(KEY_D)){
+        if (IsKeyDown(KEY_D) || IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_RIGHT)){
             gb.direct.joypad_bits.right = false;
         }
         else {
             gb.direct.joypad_bits.right = true;
         }
 
-        if (IsMouseButtonPressed(0)){
+        if (IsMouseButtonPressed(0) || IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)){
             gb.direct.joypad_bits.a = false;
         }
         else {
             gb.direct.joypad_bits.a = true;
         }
 
-        if (IsMouseButtonPressed(1)){
+        if (IsMouseButtonPressed(1) || IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_RIGHT)){
             gb.direct.joypad_bits.b = false;
         }
         else {
