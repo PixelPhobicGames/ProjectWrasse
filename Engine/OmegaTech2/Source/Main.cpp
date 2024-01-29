@@ -100,8 +100,17 @@ int main() {
             EndShaderMode();
 
             if (!UsingCineFlow && !UseLumina) {
-                UpdateUI();
+                if (UIToggle)UpdateUI();
                 UpdateCustomUI(OmegaTechData.LevelIndex);
+            }
+
+            if (IsKeyPressed(KEY_TAB)){
+                if (UIToggle){
+                    UIToggle = false;
+                }
+                else {
+                    UIToggle = true;
+                }
             }
 
             if (FPSEnabled) {

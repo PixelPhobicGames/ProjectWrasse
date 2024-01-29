@@ -446,34 +446,9 @@ void ConsoleParseCommand(const char *Command) {
         Found = true;
     }
 
-    if (CommandValue == "WipePMem") {
-        PrintConsole("Wiping Memory Page\n");
-
-        ofstream PmemFile("GameData/Saves/PMEM");
-        PmemFile << "";
-        PmemFile.close();
-
-        PrintConsole("Done.\n");
-
-        Found = true;
-    }
-
-    if (CommandValue == "DumpPMem") {
-        PrintConsole("Dumping Memory Page\n");
-
-        for (int i = 0; i <= PMemCounter - 1; i++) {
-            PrintConsole(TextFormat("%s : %i\n", PermanentMemory[i].Name.c_str(), PermanentMemory[i].IValue));
-        }
-
-        PrintConsole("Done.\n");
-
-        Found = true;
-    }
-
     if (CommandValue == "SigGen") {
 
         string Data = WstringToString(WorldData);
-
         string NewSig = SignatureGen<string>(Data);
 
         cout << NewSig << "\n";
@@ -487,25 +462,14 @@ void ConsoleParseCommand(const char *Command) {
         Found = true;
     }
 
-    if (CommandValue == "DumpLP") {
-        PrintConsole("Language Pack\n");
-
-        for (int i = 0; i <= GlobalPackData.Size; i++) {
-            PrintConsole(GlobalPackData.Lines[i].c_str());
-            PrintConsole("\n");
-        }
-
-        PrintConsole("Done.\n");
-
-        Found = true;
-    }
-
     if (!Found) {
         PrintConsole("Command Not Found: ");
         PrintConsole(Command);
         PrintConsole("<--\n");
     }
 }
+
+int CommandCounter = 0;
 
 void DrawConsole() {
     GuiPanel((Rectangle){0, 40, 616, 288}, NULL);
@@ -519,6 +483,12 @@ void DrawConsole() {
     if (IsKeyPressed(KEY_ENTER)) {
         ConsoleParseCommand(TextBox001Text);
         TextBox001Text[0] = '\0';
+        CommandCounter ++;
+
+        if (CommandCounter == 2){
+            TextBox002Text[0] = '\0';
+            CommandCounter = 0;
+        }
     }
 }
 
@@ -529,29 +499,31 @@ wstring CharArrayToWString(const char *charArray) {
 }
 
 void CheckKey() {
-    char hostname[100];
-    gethostname(hostname, 100);
+    #ifdef Linux
+        char hostname[100];
+        gethostname(hostname, 100);
 
-    cout << "USER: " << hostname << "\n";
+        cout << "USER: " << hostname << "\n";
 
-    wstring encodedData = CharArrayToWString(hostname);
-    encodedData = Encode(encodedData, MainKey);
+        wstring encodedData = CharArrayToWString(hostname);
+        encodedData = Encode(encodedData, MainKey);
 
-    if (!IsPathFile("GameData/Key/Key.sig")) {
-        ofstream SigFile("GameData/Key/Key.sig");
+        if (!IsPathFile("GameData/Key/Key.sig")) {
+            ofstream SigFile("GameData/Key/Key.sig");
 
-        if (SigFile.is_open()) {
-            SigFile << TextFormat("%ls", encodedData.c_str());
-            SigFile.close();
+            if (SigFile.is_open()) {
+                SigFile << TextFormat("%ls", encodedData.c_str());
+                SigFile.close();
+            } else {
+                cerr << "Error opening file for writing.\n";
+            }
         } else {
-            cerr << "Error opening file for writing.\n";
-        }
-    } else {
-        wstring Data = LoadFile("GameData/Key/Key.sig");
+            wstring Data = LoadFile("GameData/Key/Key.sig");
 
-        if (!(Data[3] == encodedData[3])) {
-            wcout << Data << " != " << encodedData << "\n";
-            exit(0);
+            if (!(Data[3] == encodedData[3])) {
+                wcout << Data << " != " << encodedData << "\n";
+                exit(0);
+            }
         }
-    }
+    #endif
 }

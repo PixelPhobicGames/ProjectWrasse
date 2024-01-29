@@ -926,34 +926,25 @@ bool LDropdownBoxEditMode = false;
 int LDropdownBoxActive = 0;
 
 void PlayHomeScreen() {
+    Texture2D TitleImage = LoadTexture("GameData/Global/Title/Title.png");
+
     while (true && !WindowShouldClose()) {
         BeginTextureMode(Target);
         UpdateMusicStream(OmegaTechData.HomeScreenMusic);
 
         ClearBackground(BLACK);
 
-        if (IsPathFile("GameData/Global/Title/Title.mpg")) {
-            ray_video_update(&OmegaTechData.HomeScreenVideo, GetFrameTime());
-            DrawTexturePro(OmegaTechData.HomeScreenVideo.texture,
-                           (Rectangle){0, 0, OmegaTechData.HomeScreenVideo.width, OmegaTechData.HomeScreenVideo.height},
-                           (Rectangle){0, 0, float(GetScreenWidth()), float(GetScreenHeight())},
-                           (Vector2){0, 0},
-                           0.f,
-                           WHITE);
-            if (OmegaTechData.HomeScreenVideo.video_state == RAY_VIDEO_STATE_DONE) {
-                ray_video_destroy(&OmegaTechData.HomeScreenVideo);
-                OmegaTechData.HomeScreenVideo = ray_video_open("GameData/Global/Title/Title.mpg");
-            }
-        }
-
         if (OmegaInputController.InteractPressed) {
             PlaySound(OmegaTechSoundData.UIClick);
         }
 
-        GuiLine((Rectangle){168, 240, 216, 16}, NULL);
-        GuiLine((Rectangle){168, 296, 216, 16}, NULL);
+        DrawTexture(TitleImage, 0 , 0 , WHITE);
 
-        if (GuiButton((Rectangle){184, 200, 184, 40}, "Start")) {
+        GuiLine((Rectangle){ 144, 264, 216, 16 }, NULL);
+        GuiLine((Rectangle){ 136, 336, 216, 16 }, NULL);
+        GuiLine((Rectangle){ 168, 408, 216, 16 }, NULL);
+
+        if (GuiButton((Rectangle){ 168, 256 - 48, 176, 48 }, "Start")) {
             if (LDropdownBoxActive == EnglishPack) {
                 LoadLanguagePack(EnglishPack, &GlobalPackData);
             }
@@ -979,7 +970,7 @@ void PlayHomeScreen() {
             break;
         }
 
-        if (GuiButton((Rectangle){184, 256, 184, 40}, "Load")) {
+        if (GuiButton((Rectangle){ 144, 288, 176, 48 }, "Load")) {
             UnloadRenderTexture(Target);
             Target = LoadRenderTexture(GetScreenWidth() / 4, GetScreenHeight() / 4);
 
@@ -1011,7 +1002,7 @@ void PlayHomeScreen() {
             break;
         }
 
-        if (GuiButton((Rectangle){184, 312, 184, 40}, "Settings")) {
+        if (GuiButton((Rectangle){ 168, 360, 176, 48 }, "Settings")) {
             if (MenuSettings) {
                 MenuSettings = false;
             } else {

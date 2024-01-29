@@ -13,6 +13,8 @@ bool FadeOutDone = false;
 
 Color FadeColor = (Color){R, G, B, 255};
 
+bool UIToggle = true;
+
 void PlayFadeIn() {
     Direction = 1;
     R = 0;
@@ -59,6 +61,7 @@ void UpdateFade() {
 
 static ray_video_t LogoVideo;
 static ray_video_t StudioVideo;
+
 void PlayLogo() {
 
     LogoVideo = ray_video_open("GameData/Global/Opening.mpg");

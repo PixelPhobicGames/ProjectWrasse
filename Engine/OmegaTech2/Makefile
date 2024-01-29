@@ -1,8 +1,7 @@
 ifeq ($(PLATFORM), Windows)
-
-	CFLAGS = -O3 --std=c++20 -m64
-	LDFLAGS = -static -Wall -Iexternal -DPLATFORM_DESKTOP -lopengl32 -lraylib -lgdi32 -lwinmm -DWindows
-	COMP = g++.exe
+	CFLAGS = -O3 -g
+	LDFLAGS = -static-libgcc -static-libstdc++ -static -Wall -Iexternal -DPLATFORM_DESKTOP -lopengl32 -lraylib -lgdi32 -lwinmm -DWindows -lpthread
+	COMP = wine C:/raylib/mingw/bin/g++.exe
 	BUILD_DIR = Build
 
 else
