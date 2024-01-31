@@ -41,6 +41,8 @@ int main() {
 
                     OmegaTechData.CameraSpeed = 1;
 
+                    if (IsKeyDown(KEY_SPACE))OmegaTechData.CameraSpeed = 2;
+
                     if (!OmegaInputController.InteractDown && !ShowSettings) {
                         for (int i = 0; i <= OmegaTechData.CameraSpeed; i++) {
                             UpdateCamera(&OmegaTechData.MainCamera, CAMERA_FIRST_PERSON);

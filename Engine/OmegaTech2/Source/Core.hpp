@@ -942,7 +942,6 @@ void PlayHomeScreen() {
 
         GuiLine((Rectangle){ 144, 264, 216, 16 }, NULL);
         GuiLine((Rectangle){ 136, 336, 216, 16 }, NULL);
-        GuiLine((Rectangle){ 168, 408, 216, 16 }, NULL);
 
         if (GuiButton((Rectangle){ 168, 256 - 48, 176, 48 }, "Start")) {
             if (LDropdownBoxActive == EnglishPack) {
@@ -1002,6 +1001,7 @@ void PlayHomeScreen() {
             break;
         }
 
+        /*
         if (GuiButton((Rectangle){ 168, 360, 176, 48 }, "Settings")) {
             if (MenuSettings) {
                 MenuSettings = false;
@@ -1013,6 +1013,7 @@ void PlayHomeScreen() {
         if (MenuSettings) {
             ShowMenuSetiings();
         }
+        */
 
         EndTextureMode();
         BeginDrawing();
