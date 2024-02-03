@@ -1,5 +1,19 @@
 #include "PPGIO.hpp"
 
+wstring CharArrayToWString(const char *charArray) {
+    locale utf8Locale(locale(), new codecvt_utf8<wchar_t>);
+    wstring_convert<codecvt_utf8<wchar_t>> converter;
+    return converter.from_bytes(charArray);
+}
+
+string WstringToString(wstring wideStr) {
+
+    locale utf8Locale(locale(), new codecvt_utf8<wchar_t>);
+
+    wstring_convert<codecvt_utf8<wchar_t>, wchar_t> converter;
+    return converter.to_bytes(wideStr);
+}
+
 wstring LoadFile(const char *Path) {
     wstring Data;
     wifstream OutFile;
@@ -28,10 +42,6 @@ int GetWDLSize(wstring WData, wstring Extra) {
 
     return Out;
 }
-
-#ifdef UseAsm
-
-#endif
 
 wstring WReadValue(wstring Data, int Start, int End) {
     wstring ReadValueOut;

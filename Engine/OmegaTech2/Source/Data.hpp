@@ -3,7 +3,7 @@
 #include "Lumina/Lumina.hpp"
 #include "Misc.hpp"
 #include "Player.hpp"
-#include "Settings.hpp"
+#include "External/raygui/Style.h"
 #include "Video.hpp"
 #include "libPPG/Parasite/ParasiteScript.hpp"
 #include "libPPG/ParticleDemon/ParticleDemon.hpp"
@@ -13,6 +13,7 @@
 #include "External/rlights/rlights.h"
 #include "raylib.h"
 
+#include <cstddef>
 #include <chrono>
 #include <fstream>
 #include <iostream>
@@ -20,6 +21,25 @@
 #include <utility>
 
 using namespace std;
+
+#define MaxCachedModels 200
+#define MaxMapSize 2000
+#define MaxWStringAlloc 1048576
+
+static bool Debug = false;
+static bool HeadBob = true;
+static bool FPSEnabled = false;
+static bool ConsoleToggle = false;
+static bool UIToggle = true;
+static RenderTexture2D Target;
+
+
+static wstring WorldData;
+static wstring OtherWDLData;
+static wstring FinalWDL;
+
+static float AmbientLightValues[4] = {0.1f, 0.1f, 0.1f, 0.1f};
+static float TerrainHeightMap[MaxMapSize][MaxMapSize];
 
 class EngineData {
   public:
@@ -37,20 +57,14 @@ class EngineData {
     ray_video_t HomeScreenVideo;
     Music HomeScreenMusic;
 
-    bool FirstLoad = true;
-
     int Ticker = 0;
     int CameraSpeed = 1;
     int RenderRadius = 1000;
     int PopInRadius = 800;
     int LODSwapRadius = 160;
 
-    int Deaths;
     bool UseCachedRenderer = true;
     int BadPreformaceCounter = 0;
-    bool SkyboxEnabled = false;
-    int Ending = 0;
-    int PanicCounter = 0;
 
     void InitCamera() {
         MainCamera.position = (Vector3){0.0f, 9.0f, 0.0f};
@@ -63,15 +77,8 @@ class EngineData {
 
 static EngineData OmegaTechData;
 
-#define MaxCachedModels 200
-#define MaxMapSize 2000
-
-static float AmbientLightValues[4] = {0.1f, 0.1f, 0.1f, 0.1f};
-
-static float TerrainHeightMap[MaxMapSize][MaxMapSize];
-
 void GenHeights(Image heightmap, Vector3 size) {
-#define GRAY_VALUE(c) ((float)(c.r + c.g + c.b) / 3.0f)
+    #define GRAY_VALUE(c) ((float)(c.r + c.g + c.b) / 3.0f)
 
     int mapX = size.x;
     int mapZ = size.z;
@@ -94,21 +101,13 @@ void GenHeights(Image heightmap, Vector3 size) {
     }
 }
 
-#define MaxWStringAlloc 1048576
-
-static wstring WorldData;
-static wstring OtherWDLData;
-static wstring FinalWDL;
 
 class GameModels {
   public:
-    Texture2D Skybox;
 
     Vector3 HeightMapPosition;
-
     int HeightMapW = 0;
     int HeightMapH = 0;
-
     Model HeightMap;
     Texture2D HeightMapTexture;
 
@@ -415,14 +414,6 @@ void DrawTerrainMap() {
     }
 }
 
-string WstringToString(wstring wideStr) {
-
-    locale utf8Locale(locale(), new codecvt_utf8<wchar_t>);
-
-    wstring_convert<codecvt_utf8<wchar_t>, wchar_t> converter;
-    return converter.to_bytes(wideStr);
-}
-
 bool TextBox001EditMode = false;
 char TextBox001Text[128] = "";
 bool TextBox002EditMode = false;
@@ -490,12 +481,6 @@ void DrawConsole() {
             CommandCounter = 0;
         }
     }
-}
-
-wstring CharArrayToWString(const char *charArray) {
-    locale utf8Locale(locale(), new codecvt_utf8<wchar_t>);
-    wstring_convert<codecvt_utf8<wchar_t>> converter;
-    return converter.from_bytes(charArray);
 }
 
 void CheckKey() {

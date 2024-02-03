@@ -21,6 +21,8 @@ static int SVPlaceCounter = 0;
 static int SVStart = 0;
 static int SVEnd = 0;
 
+string WstringToString(wstring wideStr);
+wstring CharArrayToWString(const char *charArray);
 wstring LoadFile(const char *Path);
 float ToFloat(wstring Data);
 int GetWDLSize(wstring WData, wstring Extra);

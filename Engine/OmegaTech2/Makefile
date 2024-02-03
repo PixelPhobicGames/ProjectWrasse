@@ -17,6 +17,7 @@ $(shell mkdir -p $(BUILD_DIR))
 
 OBJS = $(BUILD_DIR)/raygui.o \
   $(BUILD_DIR)/cJSON.o \
+  $(BUILD_DIR)/Lumina.o \
   $(BUILD_DIR)/Encoder.o \
   $(BUILD_DIR)/PPGIO.o \
   $(BUILD_DIR)/SigCheck.o \
@@ -43,6 +44,9 @@ $(BUILD_DIR)/Language.o: Source/libPPG/Language/Language.cpp
 
 $(BUILD_DIR)/Encoder.o: Source/libPPG/Encoder/Encoder.cpp
 	$(COMP) $(CFLAGS) -c Source/libPPG/Encoder/Encoder.cpp -o $@ $(LDFLAGS)
+
+$(BUILD_DIR)/Lumina.o: Source/Lumina/Lumina.cpp
+	$(COMP) $(CFLAGS) -c Source/Lumina/Lumina.cpp -o $@ $(LDFLAGS)
 
 $(BUILD_DIR)/cJSON.o: Source/Lumina/Json/cJSON.c
 	$(COMP) $(CFLAGS) -c Source/Lumina/Json/cJSON.c -o $@ $(LDFLAGS)

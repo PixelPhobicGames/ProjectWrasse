@@ -13,8 +13,6 @@ bool FadeOutDone = false;
 
 Color FadeColor = (Color){R, G, B, 255};
 
-bool UIToggle = true;
-
 void PlayFadeIn() {
     Direction = 1;
     R = 0;

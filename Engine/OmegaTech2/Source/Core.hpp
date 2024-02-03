@@ -61,7 +61,6 @@ auto LoadWorld() {
         ClearLights();
 
         SceneIDMirror = OmegaTechData.LevelIndex;
-        OmegaTechData.SkyboxEnabled = false;
 
         if (IsPathFile(TextFormat("GameData/Worlds/World%i/NoiseEmitter/NE1.mp3", OmegaTechData.LevelIndex))) {
             StopMusicStream(OmegaTechSoundData.NESound1);
@@ -83,12 +82,6 @@ auto LoadWorld() {
                 LoadMusicStream(TextFormat("GameData/Worlds/World%i/NoiseEmitter/NE3.mp3", OmegaTechData.LevelIndex));
         } else {
             UnloadMusicStream(OmegaTechSoundData.NESound3);
-        }
-
-        if (IsPathFile(TextFormat("GameData/Worlds/World%i/Models/Skybox.png", OmegaTechData.LevelIndex))) {
-            WDLModels.Skybox =
-                LoadTexture(TextFormat("GameData/Worlds/World%i/Models/Skybox.png", OmegaTechData.LevelIndex));
-            OmegaTechData.SkyboxEnabled = true;
         }
 
         for (int i = 0; i <= EntityCount - 1; i++) {
@@ -144,13 +137,22 @@ auto LoadWorld() {
                 LoadImage(TextFormat("GameData/Worlds/World%i/Models/HeightMap.png", OmegaTechData.LevelIndex));
             Texture2D Texture = LoadTextureFromImage(HeightMapImage);
 
-            Mesh Mesh1 = GenMeshHeightmap(HeightMapImage,
-                                          (Vector3){WDLModels.HeightMapW, WDLModels.HeightMapH, WDLModels.HeightMapW});
+            // Generate Height map Unless pregenerated one exists.
 
-            WDLModels.HeightMap = LoadModelFromMesh(Mesh1);
-            WDLModels.HeightMap.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = WDLModels.HeightMapTexture;
-            WDLModels.HeightMap.meshes[0] = Mesh1;
-            WDLModels.HeightMap.materials[0].shader = OmegaTechData.Lights;
+            if (IsPathFile(TextFormat("GameData/Worlds/World%i/Models/Terrain.obj", OmegaTechData.LevelIndex))) {
+                WDLModels.HeightMap = LoadModel(TextFormat("GameData/Worlds/World%i/Models/Terrain.obj", OmegaTechData.LevelIndex));
+                WDLModels.HeightMap.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = WDLModels.HeightMapTexture;
+                WDLModels.HeightMap.materials[0].shader = OmegaTechData.Lights;
+            }
+            else {
+                Mesh Mesh1 = GenMeshHeightmap(HeightMapImage,
+                                            (Vector3){WDLModels.HeightMapW, WDLModels.HeightMapH, WDLModels.HeightMapW});
+
+                WDLModels.HeightMap = LoadModelFromMesh(Mesh1);
+                WDLModels.HeightMap.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = WDLModels.HeightMapTexture;
+                WDLModels.HeightMap.meshes[0] = Mesh1;
+                WDLModels.HeightMap.materials[0].shader = OmegaTechData.Lights;
+            }
 
             GenHeights(HeightMapImage, {(Vector3){WDLModels.HeightMapW, WDLModels.HeightMapH, WDLModels.HeightMapW}});
         }
@@ -1000,20 +1002,6 @@ void PlayHomeScreen() {
             }
             break;
         }
-
-        /*
-        if (GuiButton((Rectangle){ 168, 360, 176, 48 }, "Settings")) {
-            if (MenuSettings) {
-                MenuSettings = false;
-            } else {
-                MenuSettings = true;
-            }
-        }
-
-        if (MenuSettings) {
-            ShowMenuSetiings();
-        }
-        */
 
         EndTextureMode();
         BeginDrawing();

@@ -43,7 +43,7 @@ int main() {
 
                     if (IsKeyDown(KEY_SPACE))OmegaTechData.CameraSpeed = 2;
 
-                    if (!OmegaInputController.InteractDown && !ShowSettings) {
+                    if (!OmegaInputController.InteractDown) {
                         for (int i = 0; i <= OmegaTechData.CameraSpeed; i++) {
                             UpdateCamera(&OmegaTechData.MainCamera, CAMERA_FIRST_PERSON);
                         }
@@ -119,7 +119,6 @@ int main() {
                 DrawFPS(0, 0);
             }
 
-            UpdateSettings();
             if (!UsingCineFlow)
                 OmegaTechTextSystem.Update();
 
