@@ -12,6 +12,7 @@
 #include <sstream>
 #include <string>
 #include <utility>
+#include <cmath>
 
 #include "raylib.h"
 
@@ -34,6 +35,11 @@ int StringToInt(const std::string &Data);
 float StringToFloat(string Data);
 string SplitValue(string Data, int Place);
 string ReadValue(string Data, int Start, int End);
+float GetDistance(float x1, float y1, float x2, float y2);
+int FlipNumber(int num);
+Vector3 Vector3Scale(Vector3 vector, float scale);
+Vector3 Vector3Add(Vector3 v1, Vector3 v2);
+bool IsPointOnScreen(Vector3 point, Camera camera);
 
 class Input {
   public:

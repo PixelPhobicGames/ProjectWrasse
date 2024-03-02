@@ -121,6 +121,30 @@ void lcd_draw_line(struct gb_s *gb, const uint8_t pixels[160], const uint_least8
 
 static RenderTexture2D GBTarget;
 
+char* convertToChar(const char* source) {
+    // Check if the source pointer is valid
+    if (source == NULL) {
+        return NULL;
+    }
+
+    // Calculate the length of the source string
+    size_t length = strlen(source);
+
+    // Allocate memory for the new char*
+    char* result = (char*)malloc(length + 1);
+
+    // Check if memory allocation was successful
+    if (result == NULL) {
+        return NULL;
+    }
+
+    // Copy the content of the source to the new memory
+    strcpy(result, source);
+
+    // Return the char* pointing to the new memory
+    return result;
+}
+
 void InitGB(char *Path){
     rom_file_name = Path;
 

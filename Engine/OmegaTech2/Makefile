@@ -59,7 +59,7 @@ $(BUILD_DIR)/raygui.o: Source/External/raygui/raygui.c
 
 .PHONY: clean
 clean:
-	rm -f $(BUILD_DIR)/*.o $(BUILD_DIR)/OTENGINE
+	rm -f $(BUILD_DIR)/*.o OTENGINE
 
 # Target to run clang-format on all C++ files
 .PHONY: format

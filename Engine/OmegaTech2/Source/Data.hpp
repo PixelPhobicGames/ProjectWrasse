@@ -1,6 +1,6 @@
 #include "Editor.hpp"
 #include "Entities.hpp"
-#include "Lumina/Lumina.hpp"
+
 #include "Misc.hpp"
 #include "Player.hpp"
 #include "External/raygui/Style.h"
@@ -22,9 +22,35 @@
 
 using namespace std;
 
+
+
+// Define for GBEngine Functionality
+
+// #define UseGBEngine  
+
+
+// Define for Lumina Functionality
+
+// #define UseLumina  
+
+#ifdef UseLumina  
+
+#include "Lumina/Lumina.hpp"
+
+#endif
+
+#ifdef UseGBEngine 
+
+#include "External/GBEngine/GBEngine.hpp"
+
+#endif 
+
 #define MaxCachedModels 200
 #define MaxMapSize 2000
 #define MaxWStringAlloc 1048576
+
+bool FloorCollision = true;
+bool ObjectCollision = false;
 
 static bool Debug = false;
 static bool HeadBob = true;
@@ -40,6 +66,14 @@ static wstring FinalWDL;
 
 static float AmbientLightValues[4] = {0.1f, 0.1f, 0.1f, 0.1f};
 static float TerrainHeightMap[MaxMapSize][MaxMapSize];
+
+#define MaxGrass 1000
+
+int RenderedGrass = 320;
+Vector3 GrassPositions[MaxGrass];
+bool GrassScan = true;
+int GrassTicker = 0;
+
 
 class EngineData {
   public:
@@ -65,6 +99,8 @@ class EngineData {
 
     bool UseCachedRenderer = true;
     int BadPreformaceCounter = 0;
+
+    Texture2D Cursor;
 
     void InitCamera() {
         MainCamera.position = (Vector3){0.0f, 9.0f, 0.0f};

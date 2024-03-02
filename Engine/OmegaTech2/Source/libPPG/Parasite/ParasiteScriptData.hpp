@@ -34,6 +34,7 @@ static int PlatformHeight = 0;
 static bool FoundPlatform = false;
 static float OriginY = 0;
 static bool ParasiteRunning = false;
+
 static bool CodeLogging = false;
 
 static int VaribleCounter = 0;

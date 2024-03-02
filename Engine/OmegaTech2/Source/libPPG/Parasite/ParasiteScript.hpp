@@ -11,7 +11,6 @@
 string PMemKey = "9876543210zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA";
 
 
-
 auto ParasiteScriptLoadFile(const char* Path){
     std::ifstream Input(Path);
     std::stringstream sstr;
@@ -1040,44 +1039,6 @@ auto CycleInstruction(){
                         DisableCursor();
                     }
 
-                }
-
-                if (SplitValue(Instruction, 0 ) == "PlayFMV"){
-                    FoundInstruction = true;
-                    ray_video_t Video;
-                    Video = ray_video_open(TextFormat("GameData/Worlds/World%i/Scripts/Movies/%s", SceneIDMirror , SplitValue(Instruction, 1 ).c_str()));
-                                    
-                    while (true && !WindowShouldClose())
-                    {
-                        BeginDrawing();
-                        ClearBackground(BLACK);
-
-                        ray_video_update(&Video, GetFrameTime());
-
-                        DrawTexturePro(Video.texture,
-                        (Rectangle){0, 0, Video.width, Video.height},
-                        (Rectangle){0, 0, float(GetScreenWidth()), float(GetScreenHeight())},
-                        (Vector2){0, 0},
-                        0.f,
-                        WHITE);
-
-                        EndDrawing();
-
-                        if (Video.video_state == RAY_VIDEO_STATE_DONE) {
-                            ray_video_destroy(&Video);
-                            break;
-                        }
-                    }
-
-
-                }
-
-                if (SplitValue(Instruction, 0 ) == "SetFace"){
-                    FoundInstruction = true;
-
-                    UnloadTexture(FacialExpression);
-
-                    FacialExpression = PullTextureFromMemory(SplitValue(Instruction, 1 ));
                 }
 
                 if (SplitValue(Instruction, 0 ) == "DrawTexture"){

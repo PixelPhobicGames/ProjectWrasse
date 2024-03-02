@@ -1,5 +1,7 @@
 #include "raylib.h"
 
+/*
+
 #define EntityCount 10
 
 class Enemys {
@@ -21,10 +23,4 @@ class Enemys {
 
 static Enemys OmegaEnemy[10];
 
-class EnemyTexture {
-  public:
-    Texture2D Frame1;
-    Sound Scream;
-};
-
-static EnemyTexture EnemyTextures;
+*/

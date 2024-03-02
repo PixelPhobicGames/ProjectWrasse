@@ -1,5 +1,35 @@
 #include "PPGIO.hpp"
 
+Vector3 Vector3Scale(Vector3 vector, float scale) {
+    Vector3 result = {
+        vector.x * scale,
+        vector.y * scale,
+        vector.z * scale
+    };
+    return result;
+}
+Vector3 Vector3Add(Vector3 v1, Vector3 v2) {
+    Vector3 result = { v1.x + v2.x, v1.y + v2.y, v1.z + v2.z };
+    return result;
+}
+bool IsPointOnScreen(Vector3 point, Camera camera) {
+    Vector2 projectedPoint = GetWorldToScreen(point, camera);
+    return (projectedPoint.x >= -GetScreenWidth() && projectedPoint.x <= GetScreenWidth() * 2&&
+            projectedPoint.y >= -GetScreenHeight()  && projectedPoint.y <= GetScreenHeight() * 2);
+}
+
+float GetDistance(float x1, float y1, float x2, float y2) {
+    float dx = x2 - x1;
+    float dy = y2 - y1;
+    float distance = sqrt(dx * dx + dy * dy);
+    return distance;
+}
+
+int FlipNumber(int num) {
+    int i = 100;
+    return i - num;
+}
+
 wstring CharArrayToWString(const char *charArray) {
     locale utf8Locale(locale(), new codecvt_utf8<wchar_t>);
     wstring_convert<codecvt_utf8<wchar_t>> converter;
